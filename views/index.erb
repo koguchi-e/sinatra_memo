@@ -1,6 +1,6 @@
-<p>
+<div class="button-parent">
   <a href="/new" class="button">新規登録</a>
-</p>
+</div>
 <h2>メモ一覧</h2>
 <ul>
   <% @memos.each do |memo| %>
@@ -10,4 +10,6 @@
   <% end %>
 </ul>
 
-<p><a href="/download_memos" class="button">メモをダウンロード</a></p>
+<div class="button-parent">
+  <a href="/download_memos" class="button">メモをダウンロード</a>
+</div>

@@ -8,7 +8,9 @@
   <%= @memo.body %>
 </p>
 <a href="/edit/<%= @memo.id %>" class="button">編集</a>
-<form method="post" action="/delete/<%= @memo.id %>">
-  <input type="hidden" name="_method" value="delete">
-  <input type="submit" class="button" value="削除">
-</form>
+<div class="button-parent">
+  <form method="post" action="/delete/<%= @memo.id %>">
+    <input type="hidden" name="_method" value="delete">
+    <input type="submit" class="button" value="削除">
+  </form>
+</div>
