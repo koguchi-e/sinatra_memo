@@ -1,0 +1,8 @@
+<h2>編集</h2>
+<form method="post" action="/update/<%= @memo.id %>">
+  <textarea class="title-form" name="title"><%= @memo.title %></textarea>
+  <br>
+  <textarea class="body-form" name="body"><%= @memo.body %></textarea>
+  <br>
+  <input type="submit" class="button" value="更新">
+</form>

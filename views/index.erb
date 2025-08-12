@@ -1,0 +1,13 @@
+<p>
+  <a href="/new" class="button">新規登録</a>
+</p>
+<h2>メモ一覧</h2>
+<ul>
+  <% @memos.each do |memo| %>
+    <li>
+      <a href="/show/<%= memo.id %>"><%= memo.title %></a>
+    </li>
+  <% end %>
+</ul>
+
+<p><a href="/download_memos" class="button">メモをダウンロード</a></p>
