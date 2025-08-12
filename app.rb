@@ -3,6 +3,7 @@ require 'ostruct'
 require 'json'
 
 use Rack::MethodOverride
+helpers ERB::Util
 
 Memos = []
 
