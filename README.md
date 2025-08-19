@@ -1,37 +1,52 @@
-### 1. Sinatraのインストール
+## クローン～起動手順
+### 前提条件
+- Ruby（3.x以上推奨）がインストールされていること
+- Bundlerがインストールされていること
 ```bash
-gem install sinatra
+gem install bundler
 ```
 
-### 2. Gemfileをインストール
+### リポジトリをクローン
+```bash
+git clone https://github.com/koguchi-e/sinatra_memo.git
+cd sinatra_memo
+```
+
+### ブランチの切り替え
+```bash
+git checkout -b memo_practice origin/memo_practice
+```
+
+### 必要なgemのインストール
 ```bash
 bundle install
 ```
 
-### 3. アプリケーションの起動
+### アプリケーションの起動
 ```bash
 bundle exec ruby app.rb
 ```
 
-## 操作方法
+## 使い方
 ### メモの新規追加
+トップ画面の「新規登録」をクリック。
 ![alt text](public/image/top.png)
-「新規登録」をクリック。
 
+入力画面でタイトル・本文を入力し、「登録」をクリック。
 ![alt text](public/image/new.png)
-情報を入力して、「登録」をクリック。
 
+登録完了後、一覧画面に移動。追加されたメモを確認できます。
 ![alt text](public/image/top2.png)
-登録完了すると一覧画面に移動します。登録されてることを確認してください。
+
 
 ### 修正・削除
+一覧から編集したいメモ名をクリック。
+詳細画面で「編集」や「削除」ができます。
 ![alt text](public/image/show.png)
-一覧からメモ名をクリックすると詳細画面に移動します。
-編集・削除の操作が可能です。
 
+一覧画面の「メモをダウンロード」ボタンから、メモ情報をJSON形式でダウンロードできます。
 ![alt text](public/image/top2.png)
-一覧画面の「メモをダウンロード」をクリックすると、JSON形式でダウンロードすることができます。
-
 ![alt text](public/image/json.png)
 
-
+## 補足
+`public/image/` 配下の画像は説明用です。動作自体には不要です。
