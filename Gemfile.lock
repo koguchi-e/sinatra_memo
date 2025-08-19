@@ -62,6 +62,7 @@ GEM
     minitest (5.25.5)
     mustermann (3.0.4)
       ruby2_keywords (~> 0.0.1)
+    nio4r (2.7.4)
     nokogiri (1.18.9-x86_64-linux-gnu)
       racc (~> 1.4)
     parallel (1.27.0)
@@ -69,6 +70,8 @@ GEM
       ast (~> 2.4.1)
       racc
     prism (1.4.0)
+    puma (6.6.1)
+      nio4r (~> 2.0)
     racc (1.8.1)
     rack (3.2.0)
     rack-protection (4.1.1)
@@ -78,6 +81,8 @@ GEM
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
+    rackup (2.2.1)
+      rack (>= 3)
     rails-dom-testing (2.3.0)
       activesupport (>= 5.0.0)
       minitest
@@ -135,6 +140,8 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   erb_lint
+  puma
+  rackup
   rubocop
   rubocop-fjord
   sinatra
