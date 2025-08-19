@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sinatra'
 require 'ostruct'
 require 'json'
@@ -5,20 +7,21 @@ require 'json'
 use Rack::MethodOverride
 helpers ERB::Util
 
-Memos = []
+MEMOS = [].freeze
 
 get '/' do
-  @memos = Memos
+  @memos = MEMOS
   erb :index
 end
 
 get '/new' do
-  @memo = Memos
+  @memo = MEMOS
   erb :new
 end
 
 class Memo
   attr_accessor :id, :title, :body
+
   def initialize(id, title, body)
     @id = id
     @title = title
@@ -31,54 +34,54 @@ post '/new' do
   body = params[:body].to_s.strip
 
   unless title.empty?
-    new_memo = Memo.new(Memos.size + 1 , title , body)
-    Memos << new_memo
+    new_memo = Memo.new(MEMOS.size + 1, title, body)
+    MEMOS << new_memo
     save_memos_to_json
   end
   redirect '/'
 end
 
 get '/show/:id' do
-  @memo = Memos.find { |m| m.id == params[:id].to_i }
+  @memo = MEMOS.find { |m| m.id == params[:id].to_i }
   if @memo
     erb :show
   else
-    "メモが見つかりませんでした"
+    'メモが見つかりませんでした'
   end
 end
 
 get '/edit/:id' do
-  @memo = Memos.find { |m| m.id == params[:id].to_i }
+  @memo = MEMOS.find { |m| m.id == params[:id].to_i }
   if @memo
     erb :edit
   else
-    "メモが見つかりませんでした"
+    'メモが見つかりませんでした'
   end
 end
 
 delete '/delete/:id' do
-  @memo = Memos.find { |m| m.id == params[:id].to_i }
+  @memo = MEMOS.find { |m| m.id == params[:id].to_i }
   if @memo
-    Memos.delete(@memo)
+    MEMOS.delete(@memo)
     redirect '/'
   else
-    "メモが見つかりませんでした"
+    'メモが見つかりませんでした'
   end
 end
 
 post '/update/:id' do
-  @memo = Memos.find { |m| m.id == params[:id].to_i }
+  @memo = MEMOS.find { |m| m.id == params[:id].to_i }
   if @memo
     @memo.title = params[:title]
     @memo.body = params[:body]
     redirect "/show/#{@memo.id}"
   else
-    "メモが見つかりませんでした"
+    'メモが見つかりませんでした'
   end
 end
 
 def save_memos_to_json
-  memos = Memos.map do |memo|
+  memos = MEMOS.map do |memo|
     {
       id: memo.id,
       title: memo.title,
