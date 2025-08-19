@@ -7,7 +7,7 @@ require 'json'
 use Rack::MethodOverride
 helpers ERB::Util
 
-MEMOS = [].freeze
+MEMOS = []
 
 get '/' do
   @memos = MEMOS
