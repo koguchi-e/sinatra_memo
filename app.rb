@@ -46,7 +46,7 @@ get '/show/:id' do
   if @memo
     erb :show
   else
-    'メモが見つかりませんでした'
+    erb :not_found
   end
 end
 
@@ -55,7 +55,7 @@ get '/edit/:id' do
   if @memo
     erb :edit
   else
-    'メモが見つかりませんでした'
+    erb :not_found
   end
 end
 
@@ -65,7 +65,7 @@ delete '/delete/:id' do
     MEMOS.delete(@memo)
     redirect '/'
   else
-    'メモが見つかりませんでした'
+    erb :not_found
   end
 end
 
@@ -76,7 +76,7 @@ post '/update/:id' do
     @memo.body = params[:body]
     redirect "/show/#{@memo.id}"
   else
-    'メモが見つかりませんでした'
+    erb :not_found
   end
 end
 
