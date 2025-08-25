@@ -4,10 +4,8 @@ require 'sinatra'
 require 'ostruct'
 require 'json'
 
-use Rack::MethodOverride
-helpers ERB::Util
-
 class MemoApp < Sinatra::Base
+  use Rack::MethodOverride
   helpers ERB::Util
 
   class << self
@@ -66,9 +64,10 @@ class MemoApp < Sinatra::Base
   end
 
   delete '/delete/:id' do
-    @memo = @memos.find { |m| m.id == params[:id].to_i }
-    if @memo
-      @memos.delete(@memo)
+    memo = self.class.memos.find { |m| m.id == params[:id].to_i }
+    if memo
+      self.class.memos.delete(memo)
+      save_memos_to_json
       redirect '/'
     else
       erb :not_found
@@ -80,6 +79,7 @@ class MemoApp < Sinatra::Base
     if @memo
       @memo.title = params[:title]
       @memo.body = params[:body]
+      save_memos_to_json
       redirect "/show/#{@memo.id}"
     else
       erb :not_found

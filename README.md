@@ -27,7 +27,7 @@ bundle install
 
 ### アプリケーションの起動
 ```bash
-bundle exec ruby app.rb
+bundle exec rackup
 ```
 
 ## 使い方
