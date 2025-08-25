@@ -10,8 +10,6 @@ helpers ERB::Util
 class MemoApp < Sinatra::Base
   helpers ERB::Util
 
-  @memos = []
-
   class << self
     attr_accessor :memos
   end
@@ -50,8 +48,7 @@ class MemoApp < Sinatra::Base
   end
 
   get '/show/:id' do
-    @memos = self.class.memos
-    @memo = @memos.find { |m| m.id == params[:id].to_i }
+    @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
       erb :show
     else
@@ -60,8 +57,7 @@ class MemoApp < Sinatra::Base
   end
 
   get '/edit/:id' do
-    @memos = self.class.memos
-    @memo = @memos.find { |m| m.id == params[:id].to_i }
+    @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
       erb :edit
     else
@@ -70,7 +66,6 @@ class MemoApp < Sinatra::Base
   end
 
   delete '/delete/:id' do
-    @memos = self.class.memos
     @memo = @memos.find { |m| m.id == params[:id].to_i }
     if @memo
       @memos.delete(@memo)
@@ -81,8 +76,7 @@ class MemoApp < Sinatra::Base
   end
 
   post '/update/:id' do
-    @memos = self.class.memos
-    @memo = @memos.find { |m| m.id == params[:id].to_i }
+    @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
       @memo.title = params[:title]
       @memo.body = params[:body]
@@ -93,8 +87,7 @@ class MemoApp < Sinatra::Base
   end
 
   def save_memos_to_json
-    @memos = self.class.memos
-    memos = @memos.map do |memo|
+    memos = self.class.memos.map do |memo|
       {
         id: memo.id,
         title: memo.title,
@@ -114,5 +107,15 @@ class MemoApp < Sinatra::Base
   not_found do
     erb :not_found
   end
+
+  def self.load_memos_from_json
+    if File.exist?('memos.json')
+      memos = JSON.parse(File.read('memos.json'))
+      self.memos = memos.map { |m| Memo.new(m['id'], m['title'], m['body']) }
+    else
+      self.memos = []
+    end
+  end
 end
+MemoApp.load_memos_from_json
 MemoApp.run! if __FILE__ == $PROGRAM_NAME
