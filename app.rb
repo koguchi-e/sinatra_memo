@@ -12,13 +12,23 @@ class MemoApp < Sinatra::Base
     attr_accessor :memos
   end
 
+  helpers do
+    def memos
+      self.class.memos
+    end
+
+    def find_memo(id)
+      memos.find { |m| m.id == id.to_i }
+    end
+  end
+
   get '/memos' do
-    @memos = self.class.memos
+    @memos = memos
     erb :'memos/index'
   end
 
   get '/memos/new' do
-    @memos = self.class.memos
+    @memos = memos
     erb :'memos/new'
   end
 
@@ -33,7 +43,7 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
-    @memos = self.class.memos
+    @memos = memos
     title = params[:title].to_s.strip
     body = params[:body].to_s.strip
 
@@ -45,8 +55,11 @@ class MemoApp < Sinatra::Base
     redirect '/memos'
   end
 
+  before '/memos/:id*' do
+    @memo = find_memo(params[:id])
+  end
+
   get '/memos/:id' do
-    @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
       erb :'memos/show'
     else
@@ -55,7 +68,6 @@ class MemoApp < Sinatra::Base
   end
 
   get '/memos/:id/edit' do
-    @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
       erb :'memos/edit'
     else
@@ -64,7 +76,6 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos/:id' do
-    @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
       @memo.title = params[:title]
       @memo.body = params[:body]
@@ -76,9 +87,8 @@ class MemoApp < Sinatra::Base
   end
 
   delete '/memos/:id' do
-    memo = self.class.memos.find { |m| m.id == params[:id].to_i }
-    if memo
-      self.class.memos.delete(memo)
+    if @memo
+      memos.delete(@memo)
       save_memos_to_json
       redirect '/memos'
     else
@@ -87,14 +97,14 @@ class MemoApp < Sinatra::Base
   end
 
   def save_memos_to_json
-    memos = self.class.memos.map do |memo|
+    memos_list = memos.map do |memo|
       {
         id: memo.id,
         title: memo.title,
         body: memo.body
       }
     end
-    json_data = JSON.pretty_generate(memos)
+    json_data = JSON.pretty_generate(memos_list)
     File.open('memos.json', 'w') do |file|
       file.write(json_data)
     end
