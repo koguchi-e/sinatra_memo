@@ -3,6 +3,7 @@
 require 'sinatra'
 require 'ostruct'
 require 'json'
+require_relative './models/memo'
 
 class MemoApp < Sinatra::Base
   use Rack::MethodOverride
@@ -30,16 +31,6 @@ class MemoApp < Sinatra::Base
   get '/memos/new' do
     @memos = memos
     erb :'memos/new'
-  end
-
-  class Memo
-    attr_accessor :id, :title, :body
-
-    def initialize(id, title, body)
-      @id = id
-      @title = title
-      @body = body
-    end
   end
 
   post '/memos' do
