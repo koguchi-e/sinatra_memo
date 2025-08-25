@@ -12,14 +12,14 @@ class MemoApp < Sinatra::Base
     attr_accessor :memos
   end
 
-  get '/' do
+  get '/memos' do
     @memos = self.class.memos
-    erb :index
+    erb :'memos/index'
   end
 
-  get '/new' do
+  get '/memos/new' do
     @memos = self.class.memos
-    erb :new
+    erb :'memos/new'
   end
 
   class Memo
@@ -32,7 +32,7 @@ class MemoApp < Sinatra::Base
     end
   end
 
-  post '/new' do
+  post '/memos' do
     @memos = self.class.memos
     title = params[:title].to_s.strip
     body = params[:body].to_s.strip
@@ -42,45 +42,45 @@ class MemoApp < Sinatra::Base
       @memos << new_memo
       save_memos_to_json
     end
-    redirect '/'
+    redirect '/memos'
   end
 
-  get '/show/:id' do
+  get '/memos/:id' do
     @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
-      erb :show
+      erb :'memos/show'
     else
       erb :not_found
     end
   end
 
-  get '/edit/:id' do
+  get '/memos/:id/edit' do
     @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
-      erb :edit
+      erb :'memos/edit'
     else
       erb :not_found
     end
   end
 
-  delete '/delete/:id' do
-    memo = self.class.memos.find { |m| m.id == params[:id].to_i }
-    if memo
-      self.class.memos.delete(memo)
-      save_memos_to_json
-      redirect '/'
-    else
-      erb :not_found
-    end
-  end
-
-  post '/update/:id' do
+  post '/memos/:id' do
     @memo = self.class.memos.find { |m| m.id == params[:id].to_i }
     if @memo
       @memo.title = params[:title]
       @memo.body = params[:body]
       save_memos_to_json
-      redirect "/show/#{@memo.id}"
+      redirect "/memos/#{@memo.id}"
+    else
+      erb :not_found
+    end
+  end
+
+  delete '/memos/:id' do
+    memo = self.class.memos.find { |m| m.id == params[:id].to_i }
+    if memo
+      self.class.memos.delete(memo)
+      save_memos_to_json
+      redirect '/memos'
     else
       erb :not_found
     end

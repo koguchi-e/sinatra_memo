@@ -1,11 +1,11 @@
 <div class="button-parent">
-  <a href="/new" class="button">新規登録</a>
+  <a href="/memos/new" class="button">新規登録</a>
 </div>
 <h2>メモ一覧</h2>
 <ul>
   <% @memos.each do |memo| %>
     <li>
-      <a href="/show/<%= memo.id %>"><%= h(memo.title) %></a>
+      <a href="/memos/<%= memo.id %>"><%= h(memo.title) %></a>
     </li>
   <% end %>
 </ul>

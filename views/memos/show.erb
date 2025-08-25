@@ -7,9 +7,9 @@
   <b>本文：</b><br>
   <%= h(@memo.body) %>
 </p>
-<a href="/edit/<%= @memo.id %>" class="button">編集</a>
+<a href="/memos/<%= @memo.id %>/edit" class="button">編集</a>
 <div class="button-parent">
-  <form method="post" action="/delete/<%= @memo.id %>">
+  <form method="post" action="/memos/<%= @memo.id %>">
     <input type="hidden" name="_method" value="delete">
     <input type="submit" class="button" value="削除">
   </form>

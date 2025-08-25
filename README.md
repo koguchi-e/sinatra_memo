@@ -32,6 +32,7 @@ bundle exec rackup
 
 ## 使い方
 ### メモの新規追加
+`http://127.0.0.1:9292/memos`にアクセス。
 トップ画面の「新規登録」をクリック。
 ![alt text](public/image/top.png)
 
