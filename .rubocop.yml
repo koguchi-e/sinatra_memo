@@ -3,5 +3,3 @@ inherit_gem:
   rubocop-fjord:
     - "config/rubocop.yml"
 
-Style/MutableConstant:
-  Enabled: false
