@@ -1,11 +1,11 @@
 <h2>メモ詳細</h2>
 <p>
   <b>タイトル：</b><br>
-  <%= @memo.title %>
+  <%= h(@memo.title) %>
 </p>
 <p>
   <b>本文：</b><br>
-  <%= @memo.body %>
+  <%= h(@memo.body) %>
 </p>
 <a href="/edit/<%= @memo.id %>" class="button">編集</a>
 <div class="button-parent">

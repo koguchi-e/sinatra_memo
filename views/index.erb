@@ -5,7 +5,7 @@
 <ul>
   <% @memos.each do |memo| %>
     <li>
-      <a href="/show/<%= memo.id %>"><%= memo.title %></a>
+      <a href="/show/<%= memo.id %>"><%= h(memo.title) %></a>
     </li>
   <% end %>
 </ul>

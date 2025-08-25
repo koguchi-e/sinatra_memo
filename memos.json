@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "title": "あああ",
-    "body": "あああ"
+    "title": "<script>alert('XSS!')</script>",
+    "body": "<script>alert('XSS!')</script>"
   }
 ]
