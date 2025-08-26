@@ -66,7 +66,7 @@ class MemoApp < Sinatra::Base
     end
   end
 
-  post '/memos/:id' do
+  patch '/memos/:id' do
     if @memo
       @memo.title = params[:title]
       @memo.body = params[:body]
