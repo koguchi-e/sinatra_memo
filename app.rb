@@ -101,10 +101,6 @@ class MemoApp < Sinatra::Base
     end
   end
 
-  get '/download_memos' do
-    send_file 'memos.json', type: 'application/json', disposition: 'attachment'
-  end
-
   not_found do
     erb :not_found
   end
