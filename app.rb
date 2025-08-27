@@ -24,23 +24,20 @@ class MemoApp < Sinatra::Base
   end
 
   get '/memos' do
-    @memos = memos
     erb :'memos/index'
   end
 
   get '/memos/new' do
-    @memos = memos
     erb :'memos/new'
   end
 
   post '/memos' do
-    @memos = memos
     title = params[:title].to_s.strip
     body = params[:body].to_s.strip
 
     unless title.empty?
-      new_memo = Memo.new(@memos.size + 1, title, body)
-      @memos << new_memo
+      new_memo = Memo.new(memos.size + 1, title, body)
+      memos << new_memo
       save_memos_to_json
     end
     redirect '/memos'
