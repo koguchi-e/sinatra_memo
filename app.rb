@@ -17,10 +17,6 @@ class MemoApp < Sinatra::Base
     def memos
       self.class.memos
     end
-
-    def find_memo(id)
-      memos.find { |m| m.id == id.to_i }
-    end
   end
 
   get '/memos' do
@@ -32,11 +28,9 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
-    title = params[:title].to_s.strip
-    body = params[:body].to_s.strip
+    new_memo = Memo.new(Memo.next_id(memos), params[:title].to_s.strip, params[:body].to_s.strip)
 
-    unless title.empty?
-      new_memo = Memo.new(memos.size + 1, title, body)
+    if new_memo.valid?
       memos << new_memo
       save_memos_to_json
     end
@@ -44,7 +38,7 @@ class MemoApp < Sinatra::Base
   end
 
   before '/memos/:id*' do
-    @memo = find_memo(params[:id])
+    @memo = Memo.find(memos, params[:id])
   end
 
   get '/memos/:id' do
@@ -59,8 +53,7 @@ class MemoApp < Sinatra::Base
 
   patch '/memos/:id' do
     halt erb(:not_found) unless @memo
-    @memo.title = params[:title]
-    @memo.body = params[:body]
+    @memo.update(params[:title], params[:body])
     save_memos_to_json
     redirect "/memos/#{@memo.id}"
   end
@@ -73,14 +66,7 @@ class MemoApp < Sinatra::Base
   end
 
   def save_memos_to_json
-    memos_list = memos.map do |memo|
-      {
-        id: memo.id,
-        title: memo.title,
-        body: memo.body
-      }
-    end
-    json_data = JSON.pretty_generate(memos_list)
+    json_data = JSON.pretty_generate(memos.map(&:to_h))
     File.open('memos.json', 'w') do |file|
       file.write(json_data)
     end
@@ -92,8 +78,8 @@ class MemoApp < Sinatra::Base
 
   def self.load_memos_from_json
     if File.exist?('memos.json')
-      memos = JSON.parse(File.read('memos.json'))
-      self.memos = memos.map { |m| Memo.new(m['id'], m['title'], m['body']) }
+      json = JSON.parse(File.read('memos.json'))
+      self.memos = json.map { |h| Memo.from_h(h) }
     else
       self.memos = []
     end
