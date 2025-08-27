@@ -51,40 +51,28 @@ class MemoApp < Sinatra::Base
   end
 
   get '/memos/:id' do
-    if @memo
-      erb :'memos/show'
-    else
-      erb :not_found
-    end
+    halt erb(:not_found) unless @memo
+    erb :'memos/show'
   end
 
   get '/memos/:id/edit' do
-    if @memo
-      erb :'memos/edit'
-    else
-      erb :not_found
-    end
+    halt erb(:not_found) unless @memo
+    erb :'memos/edit'
   end
 
   patch '/memos/:id' do
-    if @memo
-      @memo.title = params[:title]
-      @memo.body = params[:body]
-      save_memos_to_json
-      redirect "/memos/#{@memo.id}"
-    else
-      erb :not_found
-    end
+    halt erb(:not_found) unless @memo
+    @memo.title = params[:title]
+    @memo.body = params[:body]
+    save_memos_to_json
+    redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
-    if @memo
-      memos.delete(@memo)
-      save_memos_to_json
-      redirect '/memos'
-    else
-      erb :not_found
-    end
+    halt erb(:not_found) unless @memo
+    memos.delete(@memo)
+    save_memos_to_json
+    redirect '/memos'
   end
 
   def save_memos_to_json
