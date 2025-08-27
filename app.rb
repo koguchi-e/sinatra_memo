@@ -64,14 +64,7 @@ class MemoApp < Sinatra::Base
     save_memos_to_json
     redirect '/memos'
   end
-
-  def save_memos_to_json
-    json_data = JSON.pretty_generate(memos.map(&:to_h))
-    File.open('memos.json', 'w') do |file|
-      file.write(json_data)
-    end
-  end
-
+  
   not_found do
     erb :not_found
   end
@@ -82,6 +75,13 @@ class MemoApp < Sinatra::Base
       self.memos = json.map { |h| Memo.from_h(h) }
     else
       self.memos = []
+    end
+  end
+
+  def save_memos_to_json
+    json_data = JSON.pretty_generate(memos.map(&:to_h))
+    File.open('memos.json', 'w') do |file|
+      file.write(json_data)
     end
   end
 end
