@@ -18,8 +18,8 @@ class Memo
   end
 
   def update(title, body)
-    self.title = title
-    self.body = body
+    @title = title
+    @body = body
   end
 
   def self.find(memos, id)
