@@ -64,7 +64,7 @@ class MemoApp < Sinatra::Base
     save_memos_to_json
     redirect '/memos'
   end
-  
+
   not_found do
     erb :not_found
   end
@@ -72,7 +72,7 @@ class MemoApp < Sinatra::Base
   def self.load_memos_from_json
     if File.exist?('memos.json')
       json = JSON.parse(File.read('memos.json'))
-      self.memos = json.map { |h| Memo.from_h(h) }
+      self.memos = json.map { |h| Memo.new(*h.values) }
     else
       self.memos = []
     end

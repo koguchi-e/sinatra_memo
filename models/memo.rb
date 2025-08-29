@@ -13,10 +13,6 @@ class Memo
     { id: id, title: title, body: body }
   end
 
-  def self.from_h(hash)
-    new(hash['id'] || hash[:id], hash['title'] || hash[:title], hash['body'] || hash[:body])
-  end
-
   def valid?
     !title.to_s.strip.empty?
   end
