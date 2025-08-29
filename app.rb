@@ -17,6 +17,14 @@ class MemoApp < Sinatra::Base
     def memos
       self.class.memos
     end
+
+    not_found do
+      erb :not_found
+    end
+
+    def not_found_if_nil(obj)
+      halt erb(:not_found) unless obj
+    end
   end
 
   get '/memos' do
@@ -42,31 +50,27 @@ class MemoApp < Sinatra::Base
   end
 
   get '/memos/:id' do
-    halt erb(:not_found) unless @memo
+    not_found_if_nil(@memo)
     erb :'memos/show'
   end
 
   get '/memos/:id/edit' do
-    halt erb(:not_found) unless @memo
+    not_found_if_nil(@memo)
     erb :'memos/edit'
   end
 
   patch '/memos/:id' do
-    halt erb(:not_found) unless @memo
+    not_found_if_nil(@memo)
     @memo.update(params[:title], params[:body])
     save_memos_to_json
     redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
-    halt erb(:not_found) unless @memo
+    not_found_if_nil(@memo)
     memos.delete(@memo)
     save_memos_to_json
     redirect '/memos'
-  end
-
-  not_found do
-    erb :not_found
   end
 
   def self.load_memos_from_json
