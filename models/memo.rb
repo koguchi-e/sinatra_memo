@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Memo
-  attr_accessor :id, :title, :body
+  attr_reader :id, :title, :body
 
   def initialize(id, title, body)
     @id = id
