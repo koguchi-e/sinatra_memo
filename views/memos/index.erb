@@ -3,7 +3,7 @@
 </div>
 <h2>メモ一覧</h2>
 <ul>
-  <% memos.each do |m| %>
+  <% @memos.each do |m| %>
     <li>
       <a href="/memos/<%= m.id %>"><%= h(m.title) %></a>
     </li>

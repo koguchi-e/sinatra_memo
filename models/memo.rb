@@ -30,19 +30,16 @@ class Memo
     memos.map(&:id).max.to_i + 1
   end
 
-  def self.load_memos_from_json
+  def self.all
     if File.exist?('memos.json')
-      json = JSON.parse(File.read('memos.json'))
-      self.memos = json.map { |h| Memo.new(*h.values) }
+      JSON.parse(File.read('memos.json')).map { |h| Memo.new(*h.values) }
     else
-      self.memos = []
+      []
     end
   end
 
-  def save_memos_to_json
+  def self.save_all(memos)
     json_data = JSON.pretty_generate(memos.map(&:to_h))
-    File.open('memos.json', 'w') do |file|
-      file.write(json_data)
-    end
+    File.write('memos.json', json_data)
   end
 end

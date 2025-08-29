@@ -14,10 +14,6 @@ class MemoApp < Sinatra::Base
   end
 
   helpers do
-    def memos
-      self.class.memos
-    end
-
     not_found do
       erb :not_found
     end
@@ -27,7 +23,12 @@ class MemoApp < Sinatra::Base
     end
   end
 
+  get '/' do
+    redirect '/memos'
+  end
+
   get '/memos' do
+    @memos = Memo.all
     erb :'memos/index'
   end
 
@@ -36,16 +37,18 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
+    memos = Memo.all
     new_memo = Memo.new(Memo.next_id(memos), params[:title].to_s.strip, params[:body].to_s.strip)
 
     if new_memo.valid?
       memos << new_memo
-      save_memos_to_json
+      Memo.save_all(memos)
     end
     redirect '/memos'
   end
 
   before '/memos/:id*' do
+    memos = Memo.all
     @memo = Memo.find(memos, params[:id])
   end
 
@@ -60,34 +63,21 @@ class MemoApp < Sinatra::Base
   end
 
   patch '/memos/:id' do
-    not_found_if_nil(@memo)
-    @memo.update(params[:title], params[:body])
-    save_memos_to_json
-    redirect "/memos/#{@memo.id}"
+    memos = Memo.all
+    memo = Memo.find(memos, params[:id])
+    not_found_if_nil(memo)
+    memo.update(params[:title], params[:body])
+    Memo.save_all(memos)
+    redirect "/memos/#{memo.id}"
   end
 
   delete '/memos/:id' do
-    not_found_if_nil(@memo)
-    memos.delete(@memo)
-    save_memos_to_json
+    memos = Memo.all
+    memo = Memo.find(memos, params[:id])
+    not_found_if_nil(memo)
+    memos.delete(memo)
+    Memo.save_all(memos)
     redirect '/memos'
   end
-
-  def self.load_memos_from_json
-    if File.exist?('memos.json')
-      json = JSON.parse(File.read('memos.json'))
-      self.memos = json.map { |h| Memo.new(*h.values) }
-    else
-      self.memos = []
-    end
-  end
-
-  def save_memos_to_json
-    json_data = JSON.pretty_generate(memos.map(&:to_h))
-    File.open('memos.json', 'w') do |file|
-      file.write(json_data)
-    end
-  end
 end
-MemoApp.load_memos_from_json
 MemoApp.run! if __FILE__ == $PROGRAM_NAME
