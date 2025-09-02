@@ -48,8 +48,8 @@ class MemoApp < Sinatra::Base
   end
 
   before '/memos/:id*' do
-    memos = Memo.all
-    @memo = Memo.find(memos, params[:id])
+    @memos = Memo.all
+    @memo = Memo.find(@memos, params[:id])
   end
 
   get '/memos/:id' do
@@ -63,20 +63,16 @@ class MemoApp < Sinatra::Base
   end
 
   patch '/memos/:id' do
-    memos = Memo.all
-    memo = Memo.find(memos, params[:id])
-    not_found_if_nil(memo)
-    memo.update(params[:title], params[:body])
-    Memo.save_all(memos)
-    redirect "/memos/#{memo.id}"
+    not_found_if_nil(@memo)
+    @memo.update(params[:title], params[:body])
+    Memo.save_all(@memos)
+    redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
-    memos = Memo.all
-    memo = Memo.find(memos, params[:id])
-    not_found_if_nil(memo)
-    memos.delete(memo)
-    Memo.save_all(memos)
+    not_found_if_nil(@memo)
+    @memos.delete(@memo)
+    Memo.save_all(@memos)
     redirect '/memos'
   end
 end
