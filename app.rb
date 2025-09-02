@@ -13,16 +13,6 @@ class MemoApp < Sinatra::Base
     attr_accessor :memos
   end
 
-  helpers do
-    not_found do
-      erb :not_found
-    end
-
-    def not_found_if_nil(obj)
-      halt erb(:not_found) unless obj
-    end
-  end
-
   get '/' do
     redirect '/memos'
   end
@@ -48,29 +38,27 @@ class MemoApp < Sinatra::Base
   end
 
   before '/memos/:id*' do
+    pass if params[:id] == 'new'
     @memos = Memo.all
     @memo = Memo.find(@memos, params[:id])
+    halt erb(:not_found) unless @memo
   end
 
   get '/memos/:id' do
-    not_found_if_nil(@memo)
     erb :'memos/show'
   end
 
   get '/memos/:id/edit' do
-    not_found_if_nil(@memo)
     erb :'memos/edit'
   end
 
   patch '/memos/:id' do
-    not_found_if_nil(@memo)
     @memo.update(params[:title], params[:body])
     Memo.save_all(@memos)
     redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
-    not_found_if_nil(@memo)
     @memos.delete(@memo)
     Memo.save_all(@memos)
     redirect '/memos'
