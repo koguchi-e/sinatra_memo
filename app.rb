@@ -8,11 +8,7 @@ require_relative './models/memo'
 class MemoApp < Sinatra::Base
   use Rack::MethodOverride
   helpers ERB::Util
-
-  class << self
-    attr_accessor :memos
-  end
-
+  
   get '/' do
     redirect '/memos'
   end
