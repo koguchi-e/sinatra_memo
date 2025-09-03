@@ -1,9 +1,9 @@
 <h2>編集</h2>
-<form method="post" action="/memos/<%= @memo.id %>">
+<form method="post" action="/memos/<%= @memo["id"] %>">
   <input type="hidden" name="_method" id="hidden" value="patch">
-  <textarea class="title-form" name="title"><%= h(@memo.title) %></textarea>
+  <textarea class="title-form" name="title"><%= @memo["title"] %></textarea>
   <br>
-  <textarea class="body-form" name="body"><%= h(@memo.body) %></textarea>
+  <textarea class="body-form" name="body"><%= @memo["body"] %></textarea>
   <br>
   <div class="button-parent">
     <input type="submit" class="button" value="更新">

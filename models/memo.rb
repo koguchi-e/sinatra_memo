@@ -23,23 +23,33 @@ class Memo
   end
 
   def self.find(memos, id)
-    memos.find { |m| m.id.to_i == id.to_i }
+    conn = db_connection
+    sql = "SELECT id, title, body FROM memos WHERE id = $1"
+    result = conn.exec_params(sql, [id])
+    conn.close
+    result.first
   end
 
   def self.next_id(memos)
     memos.map(&:id).max.to_i + 1
   end
 
-  def self.all
-    if File.exist?('memos.json')
-      JSON.parse(File.read('memos.json')).map { |h| Memo.new(*h.values) }
-    else
-      []
-    end
+  def self.db_connection
+    PG.connect(host: '127.0.0.1', port: 5432, dbname: 'memo_app', user: 'koguchi')
   end
 
-  def self.save_all(memos)
-    json_data = JSON.pretty_generate(memos.map(&:to_h))
-    File.write('memos.json', json_data)
+  def self.save_all(title, body)
+    conn = db_connection
+    sql = "INSERT INTO memos (title, body) VALUES ($1, $2)"
+    conn.exec_params(sql, [title, body])
+    conn.close
+  end
+
+  def self.all
+    conn = db_connection
+    sql = "SELECT id, title, body FROM memos ORDER BY id"
+    result = conn.exec(sql)
+    conn.close
+    result.map { |row| row }
   end
 end

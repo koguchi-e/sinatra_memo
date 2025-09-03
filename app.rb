@@ -2,7 +2,7 @@
 
 require 'sinatra'
 require 'ostruct'
-require 'json'
+require 'pg'
 require_relative './models/memo'
 
 class MemoApp < Sinatra::Base
@@ -23,13 +23,7 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
-    memos = Memo.all
-    new_memo = Memo.new(Memo.next_id(memos), params[:title].to_s.strip, params[:body].to_s.strip)
-
-    if new_memo.valid?
-      memos << new_memo
-      Memo.save_all(memos)
-    end
+    Memo.save_all(params[:title], params[:body])
     redirect '/memos'
   end
 
@@ -49,14 +43,19 @@ class MemoApp < Sinatra::Base
   end
 
   patch '/memos/:id' do
-    @memo.update(params[:title], params[:body])
-    Memo.save_all(@memos)
-    redirect "/memos/#{@memo.id}"
+    conn = Memo.db_connection
+    conn.exec_params(
+      "UPDATE memos SET title = $1, body = $2 WHERE id = $3",
+      [params[:title], params[:body], params[:id]]
+    )
+    conn.close
+
+    redirect "/memos/#{params[:id]}"
   end
 
   delete '/memos/:id' do
     @memos.delete(@memo)
-    Memo.save_all(@memos)
+    Memo.save_all(params[:title], params[:body])
     redirect '/memos'
   end
 end
