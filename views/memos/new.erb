@@ -1,0 +1,10 @@
+<h2>新規登録</h2>
+<form method="post" action="/memos">
+  <textarea placeholder="タイトルを入力" class="title-form" name="title"><%= h(params[:title]) %></textarea>
+  <br>
+  <textarea placeholder="メモを入力" class="body-form" name="body"><%= h(params[:body]) %></textarea>
+  <br>
+  <div class="button-parent">
+    <input type="submit" class="button" value="登録">
+  </div>
+</form>
