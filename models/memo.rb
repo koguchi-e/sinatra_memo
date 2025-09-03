@@ -22,20 +22,20 @@ class Memo
     @body = body
   end
 
+  def self.next_id(memos)
+    memos.map(&:id).max.to_i + 1
+  end
+
+  def self.db_connection
+    PG.connect(dbname: 'memo_app')
+  end
+
   def self.find(memos, id)
     conn = db_connection
     sql = "SELECT id, title, body FROM memos WHERE id = $1"
     result = conn.exec_params(sql, [id])
     conn.close
     result.first
-  end
-
-  def self.next_id(memos)
-    memos.map(&:id).max.to_i + 1
-  end
-
-  def self.db_connection
-    PG.connect(host: '127.0.0.1', port: 5432, dbname: 'memo_app', user: 'koguchi')
   end
 
   def self.save_all(title, body)
