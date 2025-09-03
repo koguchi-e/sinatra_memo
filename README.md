@@ -34,23 +34,23 @@ bundle exec rackup
 ### メモの新規追加
 `http://127.0.0.1:9292/memos`にアクセス。
 トップ画面の「新規登録」をクリック。
-![alt text](public/image/top.png)
+![alt text](public/images/top.png)
 
 入力画面でタイトル・本文を入力し、「登録」をクリック。
-![alt text](public/image/new.png)
+![alt text](public/images/new.png)
 
 登録完了後、一覧画面に移動。追加されたメモを確認できます。
-![alt text](public/image/top2.png)
+![alt text](public/images/top2.png)
 
 
 ### 修正・削除
 一覧から編集したいメモ名をクリック。
 詳細画面で「編集」や「削除」ができます。
-![alt text](public/image/show.png)
+![alt text](public/images/show.png)
 
 一覧画面の「メモをダウンロード」ボタンから、メモ情報をJSON形式でダウンロードできます。
-![alt text](public/image/top2.png)
-![alt text](public/image/json.png)
+![alt text](public/images/top2.png)
+![alt text](public/images/json.png)
 
 ## 補足
-`public/image/` 配下の画像は説明用です。動作自体には不要です。
+`public/images/` 配下の画像は説明用です。動作自体には不要です。
