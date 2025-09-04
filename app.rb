@@ -54,8 +54,7 @@ class MemoApp < Sinatra::Base
   end
 
   delete '/memos/:id' do
-    @memos.delete(@memo)
-    Memo.save_all(params[:title], params[:body])
+    Memo.delete(params[:id])
     redirect '/memos'
   end
 end

@@ -38,7 +38,7 @@ class Memo
     result.first
   end
 
-  def self.save_all(title, body)
+  def self.save_all(title, body, id)
     conn = db_connection
     sql = "INSERT INTO memos (title, body) VALUES ($1, $2)"
     conn.exec_params(sql, [title, body])
@@ -51,5 +51,12 @@ class Memo
     result = conn.exec(sql)
     conn.close
     result.map { |row| row }
+  end
+
+  def self.delete(id)
+    conn = db_connection
+    sql = "DELETE FROM memos WHERE id = $1"
+    conn.exec_params(sql, [id])
+    conn.close
   end
 end
