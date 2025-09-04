@@ -8,7 +8,7 @@ require_relative './models/memo'
 class MemoApp < Sinatra::Base
   use Rack::MethodOverride
   helpers ERB::Util
-  
+
   get '/' do
     redirect '/memos'
   end
@@ -30,7 +30,7 @@ class MemoApp < Sinatra::Base
   before '/memos/:id*' do
     pass if params[:id] == 'new'
     @memos = Memo.all
-    @memo = Memo.find(@memos, params[:id])
+    @memo = Memo.find(params[:id])
     halt erb(:not_found) unless @memo
   end
 
@@ -45,7 +45,7 @@ class MemoApp < Sinatra::Base
   patch '/memos/:id' do
     conn = Memo.db_connection
     conn.exec_params(
-      "UPDATE memos SET title = $1, body = $2 WHERE id = $3",
+      'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
       [params[:title], params[:body], params[:id]]
     )
     conn.close

@@ -30,24 +30,24 @@ class Memo
     PG.connect(dbname: 'memo_app')
   end
 
-  def self.find(memos, id)
+  def self.find(id)
     conn = db_connection
-    sql = "SELECT id, title, body FROM memos WHERE id = $1"
+    sql = 'SELECT id, title, body FROM memos WHERE id = $1'
     result = conn.exec_params(sql, [id])
     conn.close
     result.first
   end
 
-  def self.save_all(title, body, id)
+  def self.save_all(title, body)
     conn = db_connection
-    sql = "INSERT INTO memos (title, body) VALUES ($1, $2)"
+    sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
     conn.exec_params(sql, [title, body])
     conn.close
   end
 
   def self.all
     conn = db_connection
-    sql = "SELECT id, title, body FROM memos ORDER BY id"
+    sql = 'SELECT id, title, body FROM memos ORDER BY id'
     result = conn.exec(sql)
     conn.close
     result.map { |row| row }
@@ -55,7 +55,7 @@ class Memo
 
   def self.delete(id)
     conn = db_connection
-    sql = "DELETE FROM memos WHERE id = $1"
+    sql = 'DELETE FROM memos WHERE id = $1'
     conn.exec_params(sql, [id])
     conn.close
   end
