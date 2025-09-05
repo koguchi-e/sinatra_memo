@@ -2,13 +2,13 @@
 
 require 'sinatra'
 require 'ostruct'
-require 'json'
+require 'pg'
 require_relative './models/memo'
 
 class MemoApp < Sinatra::Base
   use Rack::MethodOverride
   helpers ERB::Util
-  
+
   get '/' do
     redirect '/memos'
   end
@@ -23,20 +23,14 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
-    memos = Memo.all
-    new_memo = Memo.new(Memo.next_id(memos), params[:title].to_s.strip, params[:body].to_s.strip)
-
-    if new_memo.valid?
-      memos << new_memo
-      Memo.save_all(memos)
-    end
+    Memo.create(params[:title], params[:body])
     redirect '/memos'
   end
 
   before '/memos/:id*' do
     pass if params[:id] == 'new'
     @memos = Memo.all
-    @memo = Memo.find(@memos, params[:id])
+    @memo = Memo.find(params[:id])
     halt erb(:not_found) unless @memo
   end
 
@@ -50,13 +44,11 @@ class MemoApp < Sinatra::Base
 
   patch '/memos/:id' do
     @memo.update(params[:title], params[:body])
-    Memo.save_all(@memos)
     redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
-    @memos.delete(@memo)
-    Memo.save_all(@memos)
+    Memo.delete(params[:id])
     redirect '/memos'
   end
 end

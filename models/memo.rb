@@ -9,37 +9,51 @@ class Memo
     @body = body
   end
 
-  def to_h
-    { id: id, title: title, body: body }
+  def self.db_connection
+    PG.connect(dbname: 'memo_app')
   end
 
-  def valid?
-    !title.to_s.strip.empty?
+  def self.with_connection
+    conn = db_connection
+    yield(conn)
+  end
+
+  def self.create(title, body)
+    with_connection do |conn|
+      sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
+      conn.exec_params(sql, [title, body])
+    end
+  end
+
+  def self.all
+    with_connection do |conn|
+      sql = 'SELECT id, title, body FROM memos ORDER BY id'
+      conn.exec(sql).map { |row| new(row['id'], row['title'], row['body']) }
+    end
+  end
+
+  def self.find(id)
+    with_connection do |conn|
+      row = conn.exec_params('SELECT id, title, body FROM memos WHERE id = $1', [id]).first
+      row && new(row['id'], row['title'], row['body'])
+    end
   end
 
   def update(title, body)
     @title = title
     @body = body
-  end
-
-  def self.find(memos, id)
-    memos.find { |m| m.id.to_i == id.to_i }
-  end
-
-  def self.next_id(memos)
-    memos.map(&:id).max.to_i + 1
-  end
-
-  def self.all
-    if File.exist?('memos.json')
-      JSON.parse(File.read('memos.json')).map { |h| Memo.new(*h.values) }
-    else
-      []
+    self.class.with_connection do |conn|
+      conn.exec_params(
+        'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
+        [title, body, id]
+      )
     end
   end
 
-  def self.save_all(memos)
-    json_data = JSON.pretty_generate(memos.map(&:to_h))
-    File.write('memos.json', json_data)
+  def self.delete(id)
+    with_connection do |conn|
+      sql = 'DELETE FROM memos WHERE id = $1'
+      conn.exec_params(sql, [id])
+    end
   end
 end
