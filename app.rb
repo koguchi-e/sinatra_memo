@@ -23,7 +23,7 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
-    Memo.save_all(params[:title], params[:body])
+    Memo.create(params[:title], params[:body])
     redirect '/memos'
   end
 
@@ -43,13 +43,6 @@ class MemoApp < Sinatra::Base
   end
 
   patch '/memos/:id' do
-    conn = Memo.db_connection
-    conn.exec_params(
-      'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
-      [params[:title], params[:body], params[:id]]
-    )
-    conn.close
-
     redirect "/memos/#{params[:id]}"
   end
 

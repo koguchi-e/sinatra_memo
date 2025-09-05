@@ -17,11 +17,6 @@ class Memo
     !title.to_s.strip.empty?
   end
 
-  def update(title, body)
-    @title = title
-    @body = body
-  end
-
   def self.next_id(memos)
     memos.map(&:id).max.to_i + 1
   end
@@ -30,26 +25,33 @@ class Memo
     PG.connect(dbname: 'memo_app')
   end
 
+  def update(title, body)
+    @title = title
+    @body = body
+    conn = db_connection
+    conn.exec_params(
+      'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
+      [params[:title], params[:body], params[:id]]
+    )
+  end
+
   def self.find(id)
     conn = db_connection
     sql = 'SELECT id, title, body FROM memos WHERE id = $1'
     result = conn.exec_params(sql, [id])
-    conn.close
     result.first
   end
 
-  def self.save_all(title, body)
+  def self.create(title, body)
     conn = db_connection
     sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
     conn.exec_params(sql, [title, body])
-    conn.close
   end
 
   def self.all
     conn = db_connection
     sql = 'SELECT id, title, body FROM memos ORDER BY id'
     result = conn.exec(sql)
-    conn.close
     result.map { |row| row }
   end
 
@@ -57,6 +59,5 @@ class Memo
     conn = db_connection
     sql = 'DELETE FROM memos WHERE id = $1'
     conn.exec_params(sql, [id])
-    conn.close
   end
 end
