@@ -28,14 +28,14 @@ class Memo
   def self.all
     with_connection do |conn|
       sql = 'SELECT id, title, body FROM memos ORDER BY id'
-      conn.exec(sql).map { |row| new(row["id"], row["title"], row["body"]) }
+      conn.exec(sql).map { |row| new(row['id'], row['title'], row['body']) }
     end
   end
 
   def self.find(id)
     with_connection do |conn|
       row = conn.exec_params('SELECT id, title, body FROM memos WHERE id = $1', [id]).first
-      row && new(row["id"], row["title"], row["body"])
+      row && new(row['id'], row['title'], row['body'])
     end
   end
 
