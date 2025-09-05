@@ -9,18 +9,6 @@ class Memo
     @body = body
   end
 
-  def to_h
-    { id: id, title: title, body: body }
-  end
-
-  def valid?
-    !title.to_s.strip.empty?
-  end
-
-  def self.next_id(memos)
-    memos.map(&:id).max.to_i + 1
-  end
-
   def self.db_connection
     PG.connect(dbname: 'memo_app')
   end
