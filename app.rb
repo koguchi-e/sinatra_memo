@@ -43,7 +43,8 @@ class MemoApp < Sinatra::Base
   end
 
   patch '/memos/:id' do
-    redirect "/memos/#{params[:id]}"
+    @memo.update(params[:title], params[:body])
+    redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
