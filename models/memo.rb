@@ -13,39 +13,49 @@ class Memo
     PG.connect(dbname: 'memo_app')
   end
 
-  def update(title, body)
-    @title = title
-    @body = body
+  def self.with_connection
     conn = db_connection
-    conn.exec_params(
-      'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
-      [params[:title], params[:body], params[:id]]
-    )
-  end
-
-  def self.find(id)
-    conn = db_connection
-    sql = 'SELECT id, title, body FROM memos WHERE id = $1'
-    result = conn.exec_params(sql, [id])
-    result.first
+    yield(conn)
   end
 
   def self.create(title, body)
-    conn = db_connection
-    sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
-    conn.exec_params(sql, [title, body])
+    with_connection do |conn|
+      sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
+      conn.exec_params(sql, [title, body])
+    end
   end
 
   def self.all
-    conn = db_connection
-    sql = 'SELECT id, title, body FROM memos ORDER BY id'
-    result = conn.exec(sql)
-    result.map { |row| row }
+    with_connection do |conn|
+      sql = 'SELECT id, title, body FROM memos ORDER BY id'
+      result = conn.exec(sql)
+      result.map { |row| row }
+    end
+  end
+
+  def self.find(id)
+    with_connection do |conn|
+      sql = 'SELECT id, title, body FROM memos WHERE id = $1'
+      result = conn.exec_params(sql, [id])
+      result.first
+    end
+  end
+
+  def update(title, body)
+    @title = title
+    @body = body
+    with_connection do |conn|
+      conn.exec_params(
+        'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
+        [params[:title], params[:body], params[:id]]
+      )
+    end
   end
 
   def self.delete(id)
-    conn = db_connection
-    sql = 'DELETE FROM memos WHERE id = $1'
-    conn.exec_params(sql, [id])
+    with_connection do |conn|
+      sql = 'DELETE FROM memos WHERE id = $1'
+      conn.exec_params(sql, [id])
+    end
   end
 end
