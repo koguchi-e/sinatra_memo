@@ -9,12 +9,20 @@ class MemoApp < Sinatra::Base
   use Rack::MethodOverride
   helpers ERB::Util
 
+  before do
+    @db_connection = PG.connect(dbname: 'memo_app')
+  end
+
+  after do
+    @db_connection.close if @db_connection
+  end
+
   get '/' do
     redirect '/memos'
   end
 
   get '/memos' do
-    @memos = Memo.all
+    @memos = Memo.all(@db_connection)
     erb :'memos/index'
   end
 
@@ -23,14 +31,14 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
-    Memo.create(params[:title], params[:body])
+    Memo.create(@db_connection, params[:title], params[:body])
     redirect '/memos'
   end
 
   before '/memos/:id*' do
     pass if params[:id] == 'new'
-    @memos = Memo.all
-    @memo = Memo.find(params[:id])
+    @memos = Memo.all(@db_connection)
+    @memo = Memo.find(@db_connection, params[:id])
     halt erb(:not_found) unless @memo
   end
 
@@ -43,12 +51,12 @@ class MemoApp < Sinatra::Base
   end
 
   patch '/memos/:id' do
-    @memo.update(params[:title], params[:body])
+    @memo.update(@db_connection, params[:title], params[:body])
     redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
-    Memo.delete(params[:id])
+    Memo.delete(@db_connection, params[:id])
     redirect '/memos'
   end
 end

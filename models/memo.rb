@@ -9,51 +9,37 @@ class Memo
     @body = body
   end
 
-  def self.db_connection
-    PG.connect(dbname: 'memo_app')
-  end
-
   def self.with_connection
-    conn = db_connection
+    conn = MemoApp.instance_variable_get(:@db_connection)
     yield(conn)
   end
 
-  def self.create(title, body)
-    with_connection do |conn|
-      sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
-      conn.exec_params(sql, [title, body])
-    end
+  def self.create(conn, title, body)
+    sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
+    conn.exec_params(sql, [title, body])
   end
 
-  def self.all
-    with_connection do |conn|
-      sql = 'SELECT id, title, body FROM memos ORDER BY id'
-      conn.exec(sql).map { |row| new(row['id'], row['title'], row['body']) }
-    end
+  def self.all(conn)
+    sql = 'SELECT id, title, body FROM memos ORDER BY id'
+    conn.exec(sql).map { |row| new(row['id'], row['title'], row['body']) }
   end
 
-  def self.find(id)
-    with_connection do |conn|
-      row = conn.exec_params('SELECT id, title, body FROM memos WHERE id = $1', [id]).first
-      row && new(row['id'], row['title'], row['body'])
-    end
+  def self.find(conn, id)
+    row = conn.exec_params('SELECT id, title, body FROM memos WHERE id = $1', [id]).first
+    row && new(row['id'], row['title'], row['body'])
   end
 
-  def update(title, body)
+  def update(conn, title, body)
     @title = title
     @body = body
-    self.class.with_connection do |conn|
-      conn.exec_params(
-        'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
-        [title, body, id]
-      )
-    end
+    conn.exec_params(
+      'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
+      [title, body, id]
+    )
   end
 
-  def self.delete(id)
-    with_connection do |conn|
-      sql = 'DELETE FROM memos WHERE id = $1'
-      conn.exec_params(sql, [id])
-    end
+  def self.delete(conn, id)
+    sql = 'DELETE FROM memos WHERE id = $1'
+    conn.exec_params(sql, [id])
   end
 end
