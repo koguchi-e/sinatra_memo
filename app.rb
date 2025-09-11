@@ -2,19 +2,27 @@
 
 require 'sinatra'
 require 'ostruct'
-require 'json'
+require 'pg'
 require_relative './models/memo'
 
 class MemoApp < Sinatra::Base
   use Rack::MethodOverride
   helpers ERB::Util
-  
+
+  before do
+    @db_connection = PG.connect(dbname: 'memo_app')
+  end
+
+  after do
+    @db_connection.close if @db_connection
+  end
+
   get '/' do
     redirect '/memos'
   end
 
   get '/memos' do
-    @memos = Memo.all
+    @memos = Memo.all(@db_connection)
     erb :'memos/index'
   end
 
@@ -23,20 +31,14 @@ class MemoApp < Sinatra::Base
   end
 
   post '/memos' do
-    memos = Memo.all
-    new_memo = Memo.new(Memo.next_id(memos), params[:title].to_s.strip, params[:body].to_s.strip)
-
-    if new_memo.valid?
-      memos << new_memo
-      Memo.save_all(memos)
-    end
+    Memo.create(@db_connection, params[:title], params[:body])
     redirect '/memos'
   end
 
   before '/memos/:id*' do
     pass if params[:id] == 'new'
-    @memos = Memo.all
-    @memo = Memo.find(@memos, params[:id])
+    @memos = Memo.all(@db_connection)
+    @memo = Memo.find(@db_connection, params[:id])
     halt erb(:not_found) unless @memo
   end
 
@@ -49,14 +51,12 @@ class MemoApp < Sinatra::Base
   end
 
   patch '/memos/:id' do
-    @memo.update(params[:title], params[:body])
-    Memo.save_all(@memos)
+    @memo.update(@db_connection, params[:title], params[:body])
     redirect "/memos/#{@memo.id}"
   end
 
   delete '/memos/:id' do
-    @memos.delete(@memo)
-    Memo.save_all(@memos)
+    Memo.delete(@db_connection, params[:id])
     redirect '/memos'
   end
 end
