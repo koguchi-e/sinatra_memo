@@ -9,37 +9,37 @@ class Memo
     @body = body
   end
 
-  def to_h
-    { id: id, title: title, body: body }
+  def self.with_connection
+    conn = MemoApp.instance_variable_get(:@db_connection)
+    yield(conn)
   end
 
-  def valid?
-    !title.to_s.strip.empty?
+  def self.create(conn, title, body)
+    sql = 'INSERT INTO memos (title, body) VALUES ($1, $2)'
+    conn.exec_params(sql, [title, body])
   end
 
-  def update(title, body)
+  def self.all(conn)
+    sql = 'SELECT id, title, body FROM memos ORDER BY id'
+    conn.exec(sql).map { |row| new(row['id'], row['title'], row['body']) }
+  end
+
+  def self.find(conn, id)
+    row = conn.exec_params('SELECT id, title, body FROM memos WHERE id = $1', [id]).first
+    row && new(row['id'], row['title'], row['body'])
+  end
+
+  def update(conn, title, body)
     @title = title
     @body = body
+    conn.exec_params(
+      'UPDATE memos SET title = $1, body = $2 WHERE id = $3',
+      [title, body, id]
+    )
   end
 
-  def self.find(memos, id)
-    memos.find { |m| m.id.to_i == id.to_i }
-  end
-
-  def self.next_id(memos)
-    memos.map(&:id).max.to_i + 1
-  end
-
-  def self.all
-    if File.exist?('memos.json')
-      JSON.parse(File.read('memos.json')).map { |h| Memo.new(*h.values) }
-    else
-      []
-    end
-  end
-
-  def self.save_all(memos)
-    json_data = JSON.pretty_generate(memos.map(&:to_h))
-    File.write('memos.json', json_data)
+  def self.delete(conn, id)
+    sql = 'DELETE FROM memos WHERE id = $1'
+    conn.exec_params(sql, [id])
   end
 end
